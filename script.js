@@ -4,6 +4,7 @@ const authorText = document.getElementById('author');
 const twitterBtn = document.getElementById('twitter');
 const newQuoteBtn = document.getElementById('new-quote');
 const loader = document.getElementById('loader');
+let errorCounter = 0;
 
 function showLoader() {
     loader.hidden = false;
@@ -19,8 +20,9 @@ function hideLoader() {
 
 async function getQuoteFromAPI() {
     showLoader();
-    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+    const proxyUrl = 'https://murmuring-coast-06945.herokuapp.com/';
     const apiUrl = 'http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json';
+   
     try {
         const resp = await fetch(proxyUrl + apiUrl);
         const data = await resp.json();
@@ -29,7 +31,13 @@ async function getQuoteFromAPI() {
         quoteText.innerText = data.quoteText;
         hideLoader();
     } catch(error) {
-        getQuoteFromAPI();
+        errorCounter++;
+        if(errorCounter > 10) {
+            quoteText.innerText = 'Sorry, the page doesn\'t seem to respond. Please try again later.';
+            authorText.innerText = '';
+        } else {
+            getQuoteFromAPI();
+        }
     }
 }
 
